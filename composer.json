@@ -1,0 +1,19 @@
+{
+	"name" : "woodynadobhar/laravel-stupid-password",
+	"description" : "A laravel package wrapper for northox/stupid-password",
+	"require" : {
+		"northox/stupid-password" : "^2.0"
+	},
+	"license" : "BSD-3-Clause",
+	"authors" : [{
+			"name" : "Woody NaDobhar",
+			"email" : "woodynadobhar@hotmail.com"
+		}
+	],
+	"minimum-stability" : "stable",
+    "autoload": {
+        "psr-4": {
+            "WoodyNaDobhar\\LaravelStupidPassword\\": "src/"
+        }
+    }
+}
