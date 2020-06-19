@@ -69,8 +69,8 @@ Versioning is for chumps.
 
 BSD license. In other words, it's free software, almost free as in free beer.
 
-[ico-version]: https://img.shields.io/packagist/v/woodynadobhar/laravelstupidpassword.svg?style=flat-square
-[ico-downloads]: https://img.shields.io/packagist/dt/woodynadobhar/laravelstupidpassword.svg?style=flat-square
+[ico-version]: https://img.shields.io/packagist/v/woodynadobhar/laravel-stupid-password.svg?style=flat-square
+[ico-downloads]: https://img.shields.io/packagist/dt/woodynadobhar/laravel-stupid-password.svg?style=flat-square
 
 [link-packagist]: https://packagist.org/packages/woodynadobhar/laravel-stupid-password
 [link-downloads]: https://packagist.org/packages/woodynadobhar/laravel-stupid-password
