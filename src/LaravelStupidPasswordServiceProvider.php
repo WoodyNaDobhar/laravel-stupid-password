@@ -3,7 +3,7 @@
 namespace WoodyNaDobhar\LaravelStupidPassword;
 
 use Illuminate\Support\ServiceProvider;
-use WoodyNaDobhar\LaravelStupidPassword\Exceptions;
+use WoodyNaDobhar\LaravelStupidPassword\Exceptions\InvalidConfiguration;
 
 class LaravelStupidPasswordServiceProvider extends ServiceProvider
 {
@@ -20,7 +20,7 @@ class LaravelStupidPasswordServiceProvider extends ServiceProvider
      *
      * @var bool
      */
-    // protected $defer = false;
+    protected $defer = false;
 
     /**
      * Perform post-registration booting of services.
@@ -29,7 +29,9 @@ class LaravelStupidPasswordServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-
+        $this->publishes([
+            __DIR__.'/../config/'.$this->packageName.'.php' => config_path($this->packageName . '.php'),
+        ]);
     }
 
     /**
