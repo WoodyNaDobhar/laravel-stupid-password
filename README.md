@@ -74,3 +74,4 @@ BSD license. In other words, it's free software, almost free as in free beer.
 
 [link-packagist]: https://packagist.org/packages/woodynadobhar/laravel-stupid-password
 [link-downloads]: https://packagist.org/packages/woodynadobhar/laravel-stupid-password
+[link-contributors]: ../../contributors
