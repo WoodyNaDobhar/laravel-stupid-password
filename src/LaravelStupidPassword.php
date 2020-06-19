@@ -2,7 +2,7 @@
 
 namespace WoodyNaDobhar\LaravelStupidPassword;
 
-use StupidPass;
+use StupidPass\StupidPass;
 
 class LaravelStupidPassword extends StupidPass
 {
