@@ -15,5 +15,12 @@
         "psr-4": {
             "WoodyNaDobhar\\LaravelStupidPassword\\": "src/"
         }
-    }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "WoodyNaDobhar\\LaravelStupidPasswordServiceProvider"
+            ]
+        }
+    },
 }
