@@ -19,7 +19,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "WoodyNaDobhar\\LaravelStupidPasswordServiceProvider"
+				"WoodyNaDobhar\\LaravelStupidPassword\\LaravelStupidPasswordServiceProvider"
             ]
         }
     },
