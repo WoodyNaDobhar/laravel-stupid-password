@@ -20,11 +20,20 @@ $ artisan vendor:publish
 
 ## Usage
 
+### Automagically
+In the relevant 'password' validation rule(s), add 'stupidpassword':
+
+```php
+'password' => 'min:6|required_with:password_confirmation|same:password_confirmation|stupidpassword',
+```
+
+### By hand
+
 ```php
 
 use WoodyNaDobhar\LaravelStupidPassword\LaravelStupidPassword;
 
-$stupidPass = new LaravelStupidPassword(40, Config::get('laravelstupidpassword.environmentals'), null, null, config('laravelstupidpassword.options'));
+$stupidPass = new LaravelStupidPassword(Config::get('laravelstupidpassword.max'), Config::get('laravelstupidpassword.environmentals'), null, null, config('laravelstupidpassword.options'));
 if($stupidPass->validate($input['password']) === false) {
 	$errors = '';
 	foreach($stupidPass->getErrors() as $error) {
