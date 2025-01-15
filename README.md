@@ -3,80 +3,91 @@
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Total Downloads][ico-downloads]][link-downloads]
 
-A laravel package wrapper for northox/stupid-password.
+A Laravel package wrapper for [Northox Stupid Password](https://github.com/northox/stupid-password).
 
 ## Installation
 
-Via Composer
+Install the package via Composer:
 
-``` bash
-$ composer require woodynadobhar/laravelstupidpassword
+```bash
+composer require woodynadobhar/laravelstupidpassword
 ```
-Add config
 
-``` bash
-$ artisan vendor:publish
+Publish the configuration file:
+
+```bash
+php artisan vendor:publish --provider="WoodyNaDobhar\\LaravelStupidPassword\\LaravelStupidPasswordServiceProvider" --tag=config
 ```
+
+This will create a configuration file at `config/laravelstupidpassword.php`.
 
 ## Usage
 
-### Automagically
-In the relevant 'password' validation rule(s), add 'stupidpassword':
+### Automatically
+
+To enforce password strength validation, simply add `stupidpassword` to your validation rules:
 
 ```php
 'password' => 'min:6|required_with:password_confirmation|same:password_confirmation|stupidpassword',
 ```
 
-### By hand
+### Manually
+
+You can also validate passwords manually by using the `LaravelStupidPassword` class:
 
 ```php
-
 use WoodyNaDobhar\LaravelStupidPassword\LaravelStupidPassword;
 
-$stupidPass = new LaravelStupidPassword(Config::get('laravelstupidpassword.max'), Config::get('laravelstupidpassword.environmentals'), null, null, config('laravelstupidpassword.options'));
-if($stupidPass->validate($input['password']) === false) {
-	$errors = '';
-	foreach($stupidPass->getErrors() as $error) {
-		$errors .= $error . '<br />';
-	}
-	Flash::error('Your password is weak:<br \>' . substr($errors, 0, -6));
-	return redirect(URL::previous());
+$stupidPass = new LaravelStupidPassword(
+    config('laravelstupidpassword.max'),
+    config('laravelstupidpassword.environmentals'),
+    null,
+    null,
+    config('laravelstupidpassword.options')
+);
+
+if (!$stupidPass->validate($input['password'])) {
+    $errors = implode(' ', $stupidPass->getErrors());
+    throw new \Exception("Your password is too weak: $errors");
 }
 ```
 
-## Package dependencies
+## Configuration
 
-This is a laravel wrapper for [Northox Stupid Password](https://github.com/northox/stupid-password)
+The configuration file `laravelstupidpassword.php` allows customization of the following options:
+- **max:** Maximum number of passwords to evaluate.
+- **environmentals:** An array of additional weak passwords to consider.
+- **options:** Advanced configuration options specific to the [Northox Stupid Password](https://github.com/northox/stupid-password) library.
 
-## Change log
+## Dependencies
 
-Please see the [changelog](changelog.md) for more information on what has changed recently.
+This package is a Laravel wrapper for [Northox Stupid Password](https://github.com/northox/stupid-password).
 
-## Source
+## Change Log
 
-[https://github.com/WoodyNaDobhar/laravel-stupid-password](https://github.com/WoodyNaDobhar/laravel-stupid-password)
+Please see the [CHANGELOG](changelog.md) for details on recent changes.
 
 ## Contributing
 
-Please see [contributing.md](contributing.md) for details and a todolist.
+See [CONTRIBUTING](contributing.md) for guidelines and a to-do list.
 
 ## Security
 
-If you discover any security related issues, please contact northox instead of using the issue tracker.
+If you discover any security-related issues, please contact the [Northox Stupid Password](https://github.com/northox/stupid-password) repository owner.
 
-## Version
+## Versioning
 
-Versioning is for chumps.
+This package follows Semantic Versioning (SemVer). Updates are published to [Packagist](https://packagist.org/packages/woodynadobhar/laravel-stupid-password).
 
 ## Credits
 
-- [Danny Fullerton](https://github.com/northox) Stupid Password library
-- [Krisjanis Ozolins](https://github.com/woodynadobhar) Package template
+- [Danny Fullerton](https://github.com/northox) for the Stupid Password library.
+- [Krisjanis Ozolins](https://github.com/woodynadobhar) for the Laravel package template.
 - [All Contributors][link-contributors]
 
 ## License
 
-BSD license. In other words, it's free software, almost free as in free beer.
+This package is licensed under the BSD License. In other words, it is free software.
 
 [ico-version]: https://img.shields.io/packagist/v/woodynadobhar/laravel-stupid-password.svg?style=flat-square
 [ico-downloads]: https://img.shields.io/packagist/dt/woodynadobhar/laravel-stupid-password.svg?style=flat-square

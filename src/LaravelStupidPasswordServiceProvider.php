@@ -2,8 +2,8 @@
 
 namespace WoodyNaDobhar\LaravelStupidPassword;
 
-use Validator;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Validator;
 use WoodyNaDobhar\LaravelStupidPassword\Exceptions\InvalidConfiguration;
 
 class LaravelStupidPasswordServiceProvider extends ServiceProvider
@@ -14,14 +14,12 @@ class LaravelStupidPasswordServiceProvider extends ServiceProvider
 	 * @var  string
 	 */
 	protected $vendorName = 'woodynadobhar';
-	protected $packageName = 'laravelstupidpassword';
+	protected const PACKAGE_NAME = 'laravelstupidpassword';
+	protected $packageName = self::PACKAGE_NAME;
 
 	/**
-	 * Indicates if loading of the provider is deferred.
-	 *
-	 * @var bool
+	 * The package name for configuration.
 	 */
-	protected $defer = false;
 
 	/**
 	 * Perform post-registration booting of services.
@@ -30,28 +28,39 @@ class LaravelStupidPasswordServiceProvider extends ServiceProvider
 	 */
 	public function boot()
 	{
+		// Publish the configuration file
 		$this->publishes([
-			__DIR__.'/../config/'.$this->packageName.'.php' => config_path($this->packageName . '.php'),
-		]);
-		$message = ':custom_message';
-		Validator::extend('stupidpassword', function ($attribute, $value, $parameters, $validator) use($message) {
+			__DIR__ . '/../config/' . self::PACKAGE_NAME . '.php' => config_path(self::PACKAGE_NAME . '.php'),
+		], 'config');
 
-			$stupidPass = new LaravelStupidPassword(config('laravelstupidpassword.max'), config('laravelstupidpassword.environmentals'), null, null, config('laravelstupidpassword.options'));
-			if($stupidPass->validate($value) === false) {
-				$errors = '';
-				foreach($stupidPass->getErrors() as $error) {
-					$errors .= $error . '<br />';
-				}
-				$customMessage = 'Your password is weak:<br \>' . substr($errors, 0, -6);
-				$validator->addReplacer('stupidpassword', 
-					function($message, $attribute, $rule, $parameters) use ($customMessage) {
-						return \str_replace(':custom_message', $customMessage, $message);
-					}
-				);
+		// Register the validation rule
+		Validator::extend('stupidpassword', function ($attribute, $value, $parameters, $validator) {
+			$config = config(self::PACKAGE_NAME);
+
+			// Ensure configuration is valid
+			$this->validateConfig($config);
+
+			// Create instance of LaravelStupidPassword with configured options
+			$stupidPass = new LaravelStupidPassword(
+				$config['max'] ?? 100,
+				$config['environmentals'] ?? [],
+				null,
+				null,
+				$config['options'] ?? []
+			);
+
+			// Validate password
+			if (!$stupidPass->validate($value)) {
+				$errors = implode(' ', $stupidPass->getErrors());
+				$validator->addReplacer('stupidpassword', function () use ($errors) {
+					return "The password is too weak: $errors";
+				});
+
 				return false;
 			}
+
 			return true;
-		}, $message);
+		}, 'The :attribute is invalid.');
 	}
 
 	/**
@@ -61,42 +70,41 @@ class LaravelStupidPasswordServiceProvider extends ServiceProvider
 	 */
 	public function register()
 	{
-		$this->mergeConfigFrom(__DIR__.'/../config/'.$this->packageName.'.php', $this->packageName);
+		// Merge default configuration
+		$this->mergeConfigFrom(
+			__DIR__ . '/../config/' . self::PACKAGE_NAME . '.php',
+			self::PACKAGE_NAME
+		);
 
-		$config = config($this->packageName);
+		// Bind the main class into the service container
+		$this->app->singleton(LaravelStupidPassword::class, function ($app) {
+			$config = $app['config'][self::PACKAGE_NAME];
+			$this->validateConfig($config);
 
-		// Register the service the package provides.
-		$this->app->singleton(LaravelStupidPassword::class, function ($app) use ($config) {
-			// Checks if configuration is valid
-			$this->guardAgainstInvalidConfiguration($config);
-			return new LaravelStupidPassword;
+			return new LaravelStupidPassword(
+				$config['max'] ?? 100,
+				$config['environmentals'] ?? [],
+				null,
+				null,
+				$config['options'] ?? []
+			);
 		});
 
-		// Make alias for use with package name
-		$this->app->alias(LaravelStupidPassword::class, $this->packageName);
+		// Alias the binding
+		$this->app->alias(LaravelStupidPassword::class, 'laravelstupidpassword');
 	}
 
 	/**
-	 * Get the services provided by the provider.
+	 * Validate the package configuration.
 	 *
-	 * @return array
+	 * @param array $config
+	 * @throws InvalidConfiguration
+	 * @return void
 	 */
-	public function provides()
+	protected function validateConfig(array $config): void
 	{
-		return [$this->packageName];
-	}
-
-	/**
-	 * Checks if the config is valid.
-	 *
-	 * @param  array|null $config the package configuration
-	 * @throws InvalidConfiguration exception or null
-	 * @see  \WoodyNaDobhar\LaravelStupidPassword\Exceptions\InvalidConfiguration
-	 */
-	protected function guardAgainstInvalidConfiguration(array $config = null)
-	{
-		if (!is_array($config['environmentals'])) {
-			throw InvalidConfiguration::noEnvironmentals(); //super lazy
+		if (!isset($config['environmentals']) || !is_array($config['environmentals'])) {
+			throw InvalidConfiguration::noEnvironmentals();
 		}
 	}
 }
